@@ -1,0 +1,18 @@
+# Python
+__pycache__
+pyrightconfig.json
+.pdm-python
+.ruff_cache
+.venv
+
+# Ignore exported simulations
+*.ipc
+*.parquet
+
+*.png
+!/examples/images/*.png
+
+# Build Output
+build
+dist
+public
