@@ -41,11 +41,16 @@ class Diddler(Agent):
         alignment = Vector2(0, 0)
         cohesion = Vector2(0, 0)
         for agent,distance in self.in_proximity_accuracy():
-            if isinstance(agent, Humans):
+            if distance <= 10 and isinstance(agent, Humans):
                 agent.kill()
-                (Diddler, images=["examples/images/red.png"])
+                child = self.reproduce()
+                child.pos = self.pos + Vector2(10, 0)
                 break
             agent_pos = agent.pos
+            if distance <= 5 and isinstance(agent, Diddler): # first zone where they increase distance between them
+                move_away = self.pos-agent_pos #making negative vector of their postitions to move away
+                if move_away.length() > 0: #cant normalize a vector of 0
+                    separation += move_away.normalize() #making it normalized so they all have the same weight while acting
             if distance <= 20 and isinstance(agent, Humans):
                 toward = agent_pos - self.pos # making a postive vector to move towards the other agents current location
                 if toward.length() >0:
@@ -56,7 +61,7 @@ class Diddler(Agent):
 
 print(
     # We're using a seed to collect the same data every time.
-    Simulation(FlockingConfig(duration=600, radius=20, seed=1,image_rotation=True))
+    Simulation(FlockingConfig(radius=20, seed=1,image_rotation=True))
     .batch_spawn_agents(
         100,
         Humans,
