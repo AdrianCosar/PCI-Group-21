@@ -20,21 +20,21 @@ class Humans(Agent):
         for agent,distance in self.in_proximity_accuracy():
             agent_pos = agent.pos
             agent_direction = agent.move
-            if distance <= 5: # first zone where they increase distance between them
+            if distance <= 15: # first zone where they increase distance between them
+                move_away = self.pos-agent_pos #making negative vector of their postitions to move away
+                if move_away.length() > 0: #cant normalize a vector of 0
+                    separation += move_away.normalize()*3 #making it normalized so they all have the same weight while acting
+            elif distance <= 30 and isinstance(agent, Diddler): #second zone where agents direction is the direction of the other agents
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
                     separation += move_away.normalize() #making it normalized so they all have the same weight while acting
-            elif distance <= 10 and isinstance(agent, Diddler): #second zone where agents direction is the direction of the other agents
-                move_away = self.pos-agent_pos #making negative vector of their postitions to move away
-                if move_away.length() > 0: #cant normalize a vector of 0
-                    separation += move_away.normalize() #making it normalized so they all have the same weight while acting
-            elif distance <= 10 and isinstance(agent, Humans): #second zone where agents direction is the direction of the other agents
+            elif distance <= 20 and isinstance(agent, Humans): #second zone where agents direction is the direction of the other agents
                 alignment += agent_direction.normalize() #has to normalize it so it doesnt overwrite the other vectors from seperation and cohesion
-            elif distance <= 25 and isinstance(agent, Humans):
+            elif distance <= 30 and isinstance(agent, Humans):
                 toward = agent_pos - self.pos # making a postive vector to move towards the other agents current location
                 if toward.length() >0:
                     cohesion += toward.normalize() #normalized to not overwrite the other vectors too much while adding to total
-            if 5<=distance <= 10 and isinstance(agent, Humans):
+            if 15<=distance <= 20 and isinstance(agent, Humans):
                     herd_speed.append(agent.config.movement_speed)
         total = separation+alignment+cohesion #choses the direction to actually move taking the total of the normalized vectors
         if total.length() > 0:
@@ -71,21 +71,19 @@ class Diddler(Agent):
 
 print(
     # We're using a seed to collect the same data every time.
-    Simulation(FlockingConfig(radius=20, seed=1,image_rotation=True))
+    Simulation(FlockingConfig(radius=40, seed=1,image_rotation=True))
     .batch_spawn_agents(
         100,
         Humans,
         images=[
-            "examples/images/white.png",
-            #"examples/images/red.png",
+            "examples/images/white.png"
         ],
     )
     .batch_spawn_agents(
         1,
         Diddler,
         images=[
-            #"examples/images/white.png",
-            "examples/images/red.png",
+            "examples/images/red.png"
         ],
     )
     .run()
