@@ -19,8 +19,8 @@ class Humans(Agent):
             agent_direction = agent.move
             if distance <= 5: # first zone where they increase distance between them
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
-                if move_away.length() > 0: #cant normalize a vector of 0
-                    separation += move_away.normalize() #making it normalized so they all have the same weight while acting
+                #if move_away.length() > 0: #cant normalize a vector of 0
+                #    separation += move_away.normalize() #making it normalized so they all have the same weight while acting
             elif distance <= 10 and isinstance(agent, Diddler): #second zone where agents direction is the direction of the other agents
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
