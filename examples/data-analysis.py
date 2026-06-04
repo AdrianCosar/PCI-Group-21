@@ -24,7 +24,7 @@ class MyAgent(Agent):
 
 print(
     # We're using a seed to collect the same data every time.
-    Simulation(Config(duration=300, radius=10, seed=1))
+    Simulation(Config(duration=600, radius=10, seed=1))
     .batch_spawn_agents(
         1000,
         MyAgent,  # 👈 use our own MyAgent class.
