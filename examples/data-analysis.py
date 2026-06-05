@@ -13,6 +13,7 @@ class FlockingConfig(Config):...
 
 class Humans(Agent):
     def update(self) -> None:
+        count: int = 0
         separation = Vector2(0, 0)
         alignment = Vector2(0, 0)
         cohesion = Vector2(0, 0)
@@ -21,9 +22,17 @@ class Humans(Agent):
             agent_pos = agent.pos
             agent_direction = agent.move
             if distance <= 15: # first zone where they increase distance between them
+                count+=1
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
-                    separation += move_away.normalize()*2 #making it normalized so they all have the same weight while acting
+                    separation += move_away.normalize() * (1 / distance ** 2)
+                    
+                    if distance < 6:
+                        #apply a strong separation force to both the self and the agent it is colliding with
+                        tester=move_away.normalize() * (6-distance)/2
+                        self.pos+=Vector2(tester,0)
+                        agent.pos-=Vector2(tester,0)
+                    #separation += (move_away.normalize() * 1/distance)#making it normalized so they all have the same weight while acting
             elif distance <= 30 and isinstance(agent, Diddler): #second zone where agents direction is the direction of the other agents
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
@@ -36,6 +45,7 @@ class Humans(Agent):
                     cohesion += toward.normalize() #normalized to not overwrite the other vectors too much while adding to total
             if 15<=distance <= 20 and isinstance(agent, Humans):
                     herd_speed.append(agent.config.movement_speed)
+        #separation=separation+self.move
         total = separation+alignment+cohesion #choses the direction to actually move taking the total of the normalized vectors
         new_move = self.move + total 
         if total.length() > 0:
