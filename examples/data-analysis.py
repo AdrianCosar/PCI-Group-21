@@ -23,7 +23,7 @@ class Humans(Agent):
             if distance <= 15: # first zone where they increase distance between them
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
-                    separation += move_away.normalize()*3 #making it normalized so they all have the same weight while acting
+                    separation += move_away.normalize()*2 #making it normalized so they all have the same weight while acting
             elif distance <= 30 and isinstance(agent, Diddler): #second zone where agents direction is the direction of the other agents
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
@@ -37,12 +37,13 @@ class Humans(Agent):
             if 15<=distance <= 20 and isinstance(agent, Humans):
                     herd_speed.append(agent.config.movement_speed)
         total = separation+alignment+cohesion #choses the direction to actually move taking the total of the normalized vectors
+        new_move = self.move + total 
         if total.length() > 0:
             if len(herd_speed) > 0:
                 self.config.movement_speed = min(self.config.movement_speed - log(len(herd_speed))*0.001, min(herd_speed)) #the more agents in the herd the slower they go, but it is a very small decrease in speed so they dont get stuck
             else:
                 self.config.movement_speed = 0.5
-            self.move = total.normalize() *self.config.movement_speed #sets the next move, normalized and times the movement speed otherwise the speed varies due to the vectors being totaled
+            self.move = new_move.normalize() *self.config.movement_speed #sets the next move, normalized and times the movement speed otherwise the speed varies due to the vectors being totaled
 
 class Diddler(Agent):
     def update(self) -> None:
@@ -60,14 +61,14 @@ class Diddler(Agent):
                 move_away = self.pos-agent_pos #making negative vector of their postitions to move away
                 if move_away.length() > 0: #cant normalize a vector of 0
                     separation += move_away.normalize() #making it normalized so they all have the same weight while acting
-            elif distance <= 20 and isinstance(agent, Humans):
+            elif distance <= 25 and isinstance(agent, Humans):
                 toward = agent_pos - self.pos # making a postive vector to move towards the other agents current location
                 if toward.length() >0:
                     cohesion += toward.normalize() #normalized to not overwrite the other vectors too much while adding to total
         total = separation+alignment+cohesion #choses the direction to actually move taking the total of the normalized vectors
         self.config.movement_speed = 0.5
         if total.length() > 0:
-            self.move = total.normalize() *self.config.movement_speed #sets the next move, normalized and times the movement speed otherwise the speed varies due to the vectors being totaled
+            self.move = total.normalize() *self.config.movement_speed*1.1 #sets the next move, normalized and times the movement speed otherwise the speed varies due to the vectors being totaled
 
 print(
     # We're using a seed to collect the same data every time.
@@ -76,14 +77,14 @@ print(
         100,
         Humans,
         images=[
-            "examples/images/white.png"
+            r"/Users/lex/Documents/GitHub/PCI-Group-21/examples/images/white.png"
         ],
     )
     .batch_spawn_agents(
         1,
         Diddler,
         images=[
-            "examples/images/red.png"
+            r"/Users/lex/Documents/GitHub/PCI-Group-21/examples/images/red.png"
         ],
     )
     .run()
@@ -94,3 +95,7 @@ print(
     # Create a statistical summary including the min, mean and max number of red agents.
     #.describe(),
 )
+
+"""fix them clumping too close together
+    add timer
+    add autostop  """
