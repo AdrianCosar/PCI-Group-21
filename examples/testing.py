@@ -16,9 +16,9 @@ class Simulation_headless_altered(HeadlessSimulation):
         super().__init__(config, *args, **kwargs) 
         self._end_ticks = None
     def after_update(self) -> None:
-        super().after_update()
+        super().after_update() #i dont know if this is actually needed the documentation is not clear on if there are processes happening that need to so i just coppied them in, it seems to work, witohut it the times go up by 1000 ticks so theres some process in it dont touch
         if not any(isinstance(agent, Humans) for agent in self._agents): #checks if there are humans left
-            self._end_ticks = self.shared.counter #saves the ticks to the simulation to be access later
+            self._end_ticks = self.shared.counter #saves the ticks to the simulation to be access it later
             self.stop() #stops the simulation in the same tick
  
 def run_simulation(config: Config) -> pl.DataFrame:
