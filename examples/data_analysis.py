@@ -4,10 +4,10 @@ import polars as pl
 from pygame.math import Vector2
 from dataclasses import dataclass
 from vi.config import Config
-
-from vi import Agent, Config, Simulation
+from vi import Agent, Config, Simulation, HeadlessSimulation
 from vi.util import count
 from config import WHITE_IMG, RED_IMG
+import csv
 @dataclass
 class FlockingConfig(Config):...
 
@@ -79,33 +79,33 @@ class Diddler(Agent):
         self.config.movement_speed = 0.5
         if total.length() > 0:
             self.move = total.normalize() *self.config.movement_speed*1.1 #sets the next move, normalized and times the movement speed otherwise the speed varies due to the vectors being totaled
-
-print(
-    # We're using a seed to collect the same data every time.
-    Simulation(FlockingConfig(radius=40, seed=1,image_rotation=True))
-    .batch_spawn_agents(
-        100,
-        Humans,
-        images=[
-          WHITE_IMG
-        ],
+if __name__ == "__main__":
+    print(
+        # We're using a seed to collect the same data every time.
+        Simulation(FlockingConfig(radius=40, seed=1,image_rotation=True))
+        .batch_spawn_agents(
+            100,
+            Humans,
+            images=[
+            WHITE_IMG
+            ],
+        )
+        .batch_spawn_agents(
+            1,
+            Diddler,
+            images=[
+                RED_IMG
+            ],
+        )
+        .run()
+        #.snapshots.group_by("frame")
+        # Count the number of agents (per frame) that see at least one other agent (making them red)
+        #.agg((pl.col("in_radius") > 0).sum().alias("# red agents"))
+        #.select("# red agents")
+        # Create a statistical summary including the min, mean and max number of red agents.
+        #.describe(),
     )
-    .batch_spawn_agents(
-        1,
-        Diddler,
-        images=[
-            RED_IMG
-        ],
-    )
-    .run()
-    #.snapshots.group_by("frame")
-    # Count the number of agents (per frame) that see at least one other agent (making them red)
-    #.agg((pl.col("in_radius") > 0).sum().alias("# red agents"))
-    #.select("# red agents")
-    # Create a statistical summary including the min, mean and max number of red agents.
-    #.describe(),
-)
 
-"""
-    add timer
-    add autostop  """
+    """
+        add timer
+        add autostop  """
