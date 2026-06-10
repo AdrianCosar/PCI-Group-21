@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # We create a threadpool to run our simulations in parallel
     with Pool() as p:
         # The matrix will create four unique configs
-        matrix = Matrix(Config, radius=[50], seed=[1, 2]) #sets the config parameters for the simulation
+        matrix = Matrix(Config, radius=[50], seed=list(range(1,100))) #sets the config parameters for the simulation
 
         # Create unique combinations of matrix values
         configs = matrix.to_configs(Config)
