@@ -1,4 +1,4 @@
-from data_analysis import Humans, Diddler
+from data_analysis import Humans, Diddler, FlockingConfig
 from math import log
 
 import polars as pl
@@ -9,6 +9,8 @@ from vi import Agent, Config, HeadlessSimulation, Matrix
 from vi.util import count
 from config import WHITE_IMG, RED_IMG
 from multiprocessing import Pool\
+
+attraction_magnitude: int = 1
 
 class Simulation_headless_altered(HeadlessSimulation): 
     """Altered version of the HeadlessSimulation class that allows us to access the end ticks after the simulation has stopped."""
@@ -21,7 +23,7 @@ class Simulation_headless_altered(HeadlessSimulation):
             self._end_ticks = self.shared.counter #saves the ticks to the simulation to be access it later
             self.stop() #stops the simulation in the same tick
  
-def run_simulation(config: Config) -> pl.DataFrame:
+def run_simulation(config: FlockingConfig) -> pl.DataFrame:
     """alterd code from the documentation to run the simulation as a function that can be called in parallel and returnes a dataframe with the info we are looking for"""
     sim = (
         Simulation_headless_altered(config)
@@ -33,13 +35,16 @@ def run_simulation(config: Config) -> pl.DataFrame:
 
 if __name__ == "__main__":
     # We create a threadpool to run our simulations in parallel
-    with Pool() as p:
-        # The matrix will create four unique configs
-        matrix = Matrix(Config, radius=[50], seed=list(range(1,100))) #sets the config parameters for the simulation
+    for attraction_magnitude in [0, 0.5, 1, 1.5, 2]: #we want to test different attraction magnitudes to see how it affects the end ticks
+        with Pool() as p:
+            # The matrix will create four unique configs
+            #matrix = Matrix(FlockingConfig, radius=[50], seed=list(range(1,2)), attraction_magnitude=[attraction_magnitude]) #sets the config parameters for the simulation
 
-        # Create unique combinations of matrix values
-        configs = matrix.to_configs(Config)
+            # Create unique combinations of matrix values
+            #configs = matrix.to_configs(Config)
+            configs = [FlockingConfig(radius=50, seed=s, attraction_magnitude=attraction_magnitude)
+                       for s in range(0, 100)]
 
-        # Combine our individual DataFrames into one big DataFrame
-        df = pl.concat(p.map(run_simulation, configs)) #concats all the dataframes from the different simulations into one big dataframe
-        df.write_csv("testing.csv") #adds it all to a csv
+            # Combine our individual DataFrames into one big DataFrame
+            df = pl.concat(p.map(run_simulation, configs)) #concats all the dataframes from the different simulations into one big dataframe
+            df.write_csv(f"testing_{attraction_magnitude}.csv") #adds it all to a csv

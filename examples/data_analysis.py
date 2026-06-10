@@ -9,9 +9,12 @@ from vi.util import count
 from config import WHITE_IMG, RED_IMG
 import csv
 @dataclass
-class FlockingConfig(Config):...
+class FlockingConfig(Config):
+    attraction_magnitude: int = 1
 
 class Humans(Agent):
+    config: FlockingConfig
+    
     def update(self) -> None:
         count: int = 0
         separation = Vector2(0, 0)
@@ -39,10 +42,10 @@ class Humans(Agent):
                     separation += move_away.normalize() #making it normalized so they all have the same weight while acting
             elif distance <= 20 and isinstance(agent, Humans): #second zone where agents direction is the direction of the other agents
                 alignment += agent_direction.normalize() #has to normalize it so it doesnt overwrite the other vectors from seperation and cohesion
-            elif distance <= 30 and isinstance(agent, Humans):
+            elif distance <= 30*self.config.attraction_magnitude and isinstance(agent, Humans):
                 toward = agent_pos - self.pos # making a postive vector to move towards the other agents current location
                 if toward.length() >0:
-                    cohesion += toward.normalize() #normalized to not overwrite the other vectors too much while adding to total
+                    cohesion += toward.normalize()*self.config.attraction_magnitude #normalized to not overwrite the other vectors too much while adding to total
             if 15<=distance <= 20 and isinstance(agent, Humans):
                     herd_speed.append(agent.config.movement_speed)
         #separation=separation+self.move
