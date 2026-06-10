@@ -7,7 +7,7 @@ from vi.config import Config
 
 from vi import Agent, Config, Simulation
 from vi.util import count
-
+from config import WHITE_IMG, RED_IMG
 @dataclass
 class FlockingConfig(Config):...
 
@@ -87,14 +87,14 @@ print(
         100,
         Humans,
         images=[
-            r"/Users/lex/Documents/GitHub/PCI-Group-21/examples/images/white.png"
+          WHITE_IMG
         ],
     )
     .batch_spawn_agents(
         1,
         Diddler,
         images=[
-            r"/Users/lex/Documents/GitHub/PCI-Group-21/examples/images/red.png"
+            RED_IMG
         ],
     )
     .run()
@@ -106,6 +106,6 @@ print(
     #.describe(),
 )
 
-"""fix them clumping too close together
+"""
     add timer
     add autostop  """

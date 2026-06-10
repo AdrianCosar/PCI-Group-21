@@ -17,3 +17,4 @@ build
 dist
 public
 violet-starter-kit
+.vscode/settings.json
