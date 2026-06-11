@@ -19,3 +19,9 @@ public
 violet-starter-kit
 .vscode/settings.json
 examples/config.py
+examples/testing_0.5.csv
+examples/testing_0.csv
+.gitignore
+examples/testing_1.csv
+examples/testing_2.csv
+examples/testing_1.5.csv
