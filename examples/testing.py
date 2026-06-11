@@ -28,7 +28,7 @@ def run_simulation(config: FlockingConfig) -> pl.DataFrame:
     sim = (
         Simulation_headless_altered(config)
         .batch_spawn_agents(100, Humans, [WHITE_IMG])
-        .batch_spawn_agents(10  , Diddler, [RED_IMG])
+        .batch_spawn_agents(1  , Diddler, [RED_IMG])
     ) 
     sim.run() #put outside as it was overwriting the info
     return pl.DataFrame({"end_ticks": [sim._end_ticks], "seed": [config.seed]})
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
             # Create unique combinations of matrix values
             #configs = matrix.to_configs(Config)
-            configs = [FlockingConfig(radius=50, seed=s, attraction_magnitude=attraction_magnitude)
+            configs = [FlockingConfig(radius=160, seed=s, attraction_magnitude=attraction_magnitude)
                        for s in range(0, 100)]
 
             # Combine our individual DataFrames into one big DataFrame
