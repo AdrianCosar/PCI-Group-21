@@ -43,8 +43,9 @@ if __name__ == "__main__":
             # Create unique combinations of matrix values
             #configs = matrix.to_configs(Config)
             configs = [FlockingConfig(radius=160, seed=s, attraction_magnitude=attraction_magnitude)
-                       for s in range(0, 100)]
+                       for s in range(0,1999)]
 
             # Combine our individual DataFrames into one big DataFrame
             df = pl.concat(p.map(run_simulation, configs)) #concats all the dataframes from the different simulations into one big dataframe
+            print(f"making csv for attraction magnitude {attraction_magnitude}")
             df.write_csv(f"testing_{attraction_magnitude}.csv") #adds it all to a csv
