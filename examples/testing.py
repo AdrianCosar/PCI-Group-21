@@ -1,6 +1,7 @@
 from data_analysis import Humans, Diddler, FlockingConfig
 from math import log
-
+import os
+import csv
 import polars as pl
 from pygame.math import Vector2
 from dataclasses import dataclass
@@ -44,8 +45,9 @@ if __name__ == "__main__":
             #configs = matrix.to_configs(Config)
             configs = [FlockingConfig(radius=160, seed=s, attraction_magnitude=attraction_magnitude)
                        for s in range(0,1999)]
-
-            # Combine our individual DataFrames into one big DataFrame
-            df = pl.concat(p.map(run_simulation, configs)) #concats all the dataframes from the different simulations into one big dataframe
-            print(f"making csv for attraction magnitude {attraction_magnitude}")
-            df.write_csv(f"testing_{attraction_magnitude}.csv") #adds it all to a csv
+            with Pool() as p, open(filename, "w", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=["end_ticks", "seed"])
+                writer.writeheader()
+                for result in p.imap(run_simulation, configs):
+                    writer.writerow(result)
+                    f.flush()  # flush after each row so it gets off my ram
